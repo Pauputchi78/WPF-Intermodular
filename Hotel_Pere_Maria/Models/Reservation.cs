@@ -18,9 +18,6 @@ namespace Hotel_Pere_Maria.Models
         public double price { get; set; }
         public string createdBy { get; set; }
 
-        // Propiedad para la imagen de la habitación (agregada por backend)
-        public string RoomImage { get; set; }
-
         //La fecha de cancelación puede ser nula 
         private DateTime? _cancelation_date { get; set; }
 
@@ -41,12 +38,6 @@ namespace Hotel_Pere_Maria.Models
         {
             get => _cancelation_date?.ToLocalTime();
             set => _cancelation_date = value;
-        }
-
-        //Metodo para Calcular el precio de cancelación 
-        //Falta calcular precio
-        public double CalcularPrecioCancelacion(DateTime fechaCancelacion) {
-            return 10;
         }
 
     }
