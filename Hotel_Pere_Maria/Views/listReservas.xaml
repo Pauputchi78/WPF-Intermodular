@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel_Pere_Maria.Views"
         mc:Ignorable="d"
-        Title="listReservas" Height="650" Width="1000"
+        Title="Lista de Reservas" Height="650" Width="1000"
         WindowStartupLocation="CenterScreen" Background="#F5F6F7">
     <Grid Margin="20">
         <Grid.RowDefinitions>
