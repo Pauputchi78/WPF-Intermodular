@@ -45,12 +45,14 @@
                         <TextBox x:Name="txtIdRoom"
                              Height="30"
                              VerticalContentAlignment="Center"
-                             TextChanged="Filtros_Changed"/>
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
                     <StackPanel Margin="5">
                         <TextBlock Text="Tipo (Individual/Doble/Suite...)" FontSize="11" Margin="0,0,0,3"/>
-                        <ComboBox Height="30" SelectionChanged="Filtros_Changed" Name="cmbType">
+                        <ComboBox Height="30" Name="cmbType" 
+                                  SelectedValuePath="Content"
+                                  SelectedValue="{Binding SelectedType, UpdateSourceTrigger=PropertyChanged}">
                             <ComboBoxItem Content="Individual"/>
                             <ComboBoxItem Content="Doble"/>
                             <ComboBoxItem Content="Suite"/>
@@ -59,11 +61,10 @@
 
                     <StackPanel Margin="5" VerticalAlignment="Center">
                         <CheckBox x:Name="chkSoloDisponibles"
-                              Content="Solo disponibles"
-                              VerticalAlignment="Center"
-                              Margin="0,15,0,0"
-                              Checked="Filtros_Changed"
-                              Unchecked="Filtros_Changed"/>
+                               Content="Solo disponibles"
+                               VerticalAlignment="Center"
+                               Margin="0,15,0,0"
+                               IsChecked="{Binding OnlyAvailable}"/>
                     </StackPanel>
                 </UniformGrid>
 
@@ -83,12 +84,11 @@
                             <Slider x:Name="sldCapMin"
                     Minimum="1"
                     Maximum="10"
-                    Value="1"
+                    Value="{Binding MinCapacity, Mode=TwoWay}"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
-                    ValueChanged="Filtros_Changed"
                     Width="180"/>
-                            <TextBlock Text="{Binding ElementName=sldCapMin, Path=Value, StringFormat={}{0:0}}"
+                            <TextBlock Text="{Binding Value, ElementName=sldCapMin, StringFormat={}{0:0}}"
                        Margin="10,0,0,0"
                        VerticalAlignment="Center"/>
                         </StackPanel>
@@ -101,12 +101,11 @@
                             <Slider x:Name="sldPrecioMin"
                     Minimum="0"
                     Maximum="1000"
-                    Value="0"
+                    Value="{Binding MinPrice, Mode=TwoWay}"
                     TickFrequency="10"
                     IsSnapToTickEnabled="True"
-                    ValueChanged="Filtros_Changed"
                     Width="180"/>
-                            <TextBlock Text="{Binding ElementName=sldPrecioMin, Path=Value, StringFormat={}{0:0}€}"
+                            <TextBlock Text="{Binding Value, ElementName=sldPrecioMin, StringFormat={}{0:0}€}"
                        Margin="10,0,0,0"
                        VerticalAlignment="Center"/>
                         </StackPanel>
@@ -119,12 +118,11 @@
                             <Slider x:Name="sldPrecioMax"
                                 Minimum="0"
                                 Maximum="1000"
-                                Value="1000"
+                                Value="{Binding MaxPrice, Mode=TwoWay}"
                                 TickFrequency="10"
                                 IsSnapToTickEnabled="True"
-                                ValueChanged="Filtros_Changed"
                                 Width="180"/>
-                            <TextBlock Text="{Binding ElementName=sldPrecioMax, Path=Value, StringFormat={}{0:0}€}"
+                            <TextBlock Text="{Binding Value, ElementName=sldPrecioMax, StringFormat={}{0:0}€}"
                                 Margin="10,0,0,0"
                                 VerticalAlignment="Center"/> 
                         </StackPanel>
@@ -147,7 +145,7 @@
                         </Button>
 
                         <Button Content="Limpiar"
-                            Click="BtnLimpiar_Click"
+                            Command="{Binding LimpiarFiltrosCommand}"
                             Width="80"
                             Height="35"
                             Background="#E74C3C"

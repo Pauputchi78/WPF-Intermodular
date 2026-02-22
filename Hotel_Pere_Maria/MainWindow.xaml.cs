@@ -16,6 +16,13 @@ namespace Hotel_Pere_Maria
             _viewModel = new LoginViewModel();
             DataContext = _viewModel;
 
+            // Rellenar visualmente las contraseñas si el ViewModel cargó un recordar contraseña
+            if (!string.IsNullOrEmpty(_viewModel.Password))
+            {
+                TxtPassword.Password = _viewModel.Password;
+                txtPasswordVisible.Text = _viewModel.Password;
+            }
+
             // Suscribirse al evento de login exitoso para cerrar ventana y abrir Inicio
             _viewModel.LoginExitoso += () =>
             {

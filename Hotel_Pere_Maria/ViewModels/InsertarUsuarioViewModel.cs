@@ -2,8 +2,10 @@ using System;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Hotel_Pere_Maria.Models;
 using Hotel_Pere_Maria.Services;
+using Microsoft.Win32;
 
 namespace Hotel_Pere_Maria.ViewModels
 {
@@ -29,6 +31,8 @@ namespace Hotel_Pere_Maria.ViewModels
         private bool _esMujer;
         private bool _esOtro = true;
         private bool _adminVisible = true;
+        private string? _imagenPath;
+        private BitmapImage? _imagenPreview;
 
         // ==========================================
         // PROPIEDADES PÚBLICAS
@@ -102,11 +106,24 @@ namespace Hotel_Pere_Maria.ViewModels
             set { _adminVisible = value; OnPropertyChanged(); }
         }
 
+        public string? ImagenPath
+        {
+            get => _imagenPath;
+            set { _imagenPath = value; OnPropertyChanged(); }
+        }
+
+        public BitmapImage? ImagenPreview
+        {
+            get => _imagenPreview;
+            set { _imagenPreview = value; OnPropertyChanged(); }
+        }
+
         // ==========================================
         // COMMANDS
         // ==========================================
         public ICommand GuardarCommand { get; }
         public ICommand CancelarCommand { get; }
+        public ICommand SeleccionarImagenCommand { get; }
 
         // Evento para que el code-behind cierre la ventana con DialogResult
         public event Action<bool>? RequestClose;
@@ -120,6 +137,7 @@ namespace Hotel_Pere_Maria.ViewModels
 
             GuardarCommand = new RelayCommand(async () => await ExecuteGuardar());
             CancelarCommand = new RelayCommand(() => RequestClose?.Invoke(false));
+            SeleccionarImagenCommand = new RelayCommand(ExecuteSeleccionarImagen);
 
             // Ocultar opción admin si el usuario logueado no es admin
             if (Session.User.role != "admin")
@@ -252,6 +270,26 @@ namespace Hotel_Pere_Maria.ViewModels
                 }
 
                 RequestClose?.Invoke(true);
+
+                // Subir imagen si se seleccionó una
+                if (!string.IsNullOrEmpty(ImagenPath))
+                {
+                    try
+                    {
+                        string userId = _esEdicion ? nuevoUsuario.user_id : "";
+                        // Si es nuevo usuario, necesitamos hacer otra petición con el ID generado
+                        // La API ya devuelve el user_id al crear, pero aquí simplificamos
+                        // usando el método UpdateProfileImageAsync
+                        if (!string.IsNullOrEmpty(userId))
+                        {
+                            await UserService.UpdateProfileImageAsync(userId, ImagenPath);
+                        }
+                    }
+                    catch (Exception imgEx)
+                    {
+                        MessageBox.Show($"Usuario guardado, pero hubo un error al subir la imagen: {imgEx.Message}");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -282,6 +320,37 @@ namespace Hotel_Pere_Maria.ViewModels
 
             int resto = int.Parse(numeros) % 23;
             return letras[resto] == letraDada;
+        }
+
+        private void ExecuteSeleccionarImagen()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Seleccionar imagen de perfil",
+                Filter = "Imágenes|*.jpg;*.jpeg;*.png|Todos los archivos|*.*",
+                Multiselect = false
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                ImagenPath = dialog.FileName;
+
+                // Crear preview
+                try
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(dialog.FileName);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.DecodePixelWidth = 150;
+                    bitmap.EndInit();
+                    ImagenPreview = bitmap;
+                }
+                catch
+                {
+                    MessageBox.Show("No se pudo cargar la imagen seleccionada.");
+                }
+            }
         }
     }
 }
